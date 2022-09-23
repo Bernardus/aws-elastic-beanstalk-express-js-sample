@@ -112,7 +112,6 @@ const transformProducts = (data) => {
       streamIds: product.streamIds,
       categories: getCategories(product.categoryIds),
       price: product.calculatedPrice?.unitPrice || 0 ,
-      old_price: product.calculatedPrice.listPrice?.price,
       url: product.seoUrls?.[0].seoPathInfo,
       image: getImage(product.cover),
       stock : 0,
@@ -121,7 +120,7 @@ const transformProducts = (data) => {
           ...getProperties(product.sortedProperties),
           ...getCustomFields(product.customFields),
           getSecondImage(product.media[1]),
-          getOldPrice(product.calculatedPrice.listPrice?.price),
+          getOldPrice(product.calculatedPrice?.listPrice?.price || null),
           getReleaseDate(product.releaseDate), 
         ],
       },
@@ -177,8 +176,9 @@ const getReleaseDate = (releaseDate) => {
 };
 
 const getOldPrice = (oldPrice) => {
+  console.log(oldPrice)
   if(!oldPrice){
-    return
+    return {};
   }
   return ({
     name: 'old_price',
@@ -240,7 +240,7 @@ async function getProducts() {
       getProductBody.page++
       console.log(getProductBody.page)
       // We check if there is more paginated data to be obtained
-      if (items.length < 100) {
+      if (items.length < response.data.total) {
           // If nextPageUrl is not null, we have more data to grab
           return getProducts();
       }
