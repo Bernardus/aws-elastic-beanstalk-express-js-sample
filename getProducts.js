@@ -142,17 +142,10 @@ function filterObject(obj, key) {
 }
 
 
-const getThumbnails = (thumbnails) => {
-  return thumbnails.map((thumbnail) => ({
-    name: `thumb-${thumbnail.width}x${thumbnail.height}`,
-    value: thumbnail.url,
-  }));
-};
-
 const getSecondImage = (secondImage) => {
-  return ({
+    return ({
     name: 'second_image',
-    value: secondImage?.media?.thumbnails?.[0]?.url
+    value: secondImage?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650').url
   })
 };
 
