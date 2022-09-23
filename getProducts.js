@@ -145,7 +145,7 @@ function filterObject(obj, key) {
 const getSecondImage = (secondImage) => {
     return ({
     name: 'second_image',
-    value: secondImage?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650').url
+    value: secondImage?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650')?.url || null
   })
 };
 
