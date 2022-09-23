@@ -40,5 +40,29 @@ app.get('/', async (req, res) => {
     res.send(response.body)
 });
 
+app.get('/variants/', async (req, res) => {
+    const variants = await getVariants()
+    const response = {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/xml' },
+    body:  xml.buildObject(({'items' : { 'item' : variants }}))
+  }
+    res.header(response.headers)
+    res.send(response.body)
+});
+
+
+app.get('/stock/', async (req, res) => {
+    const stock = await getStock()
+    const response = {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/xml' },
+    body:  xml.buildObject(({'items' : { 'item' : stock}}))
+  }
+    res.header(response.headers)
+    res.send(response.body)
+});
+
+
 app.listen(port);
 console.log(`App running on http://localhost:${port}`);
