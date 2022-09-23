@@ -63,6 +63,11 @@ app.get('/stock', async (req, res) => {
     res.send(response.body)
 });
 
+app.get('/test', async (req, res) => {
+  res.send('jel')
+});
+
+
 
 app.listen(port);
 console.log(`App running on http://localhost:${port}`);
