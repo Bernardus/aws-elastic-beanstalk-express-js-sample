@@ -114,7 +114,7 @@ const transformProducts = (data) => {
       price: product.calculatedPrice?.unitPrice || 0 ,
       old_price: product.calculatedPrice.listPrice?.price,
       url: product.seoUrls?.[0].seoPathInfo,
-      image: product.media[0].media?.thumbnails?.[1]?.url,
+      image: getImage(product.cover),
       stock : 0,
       attributes: {
         attribute: [
@@ -147,6 +147,10 @@ const getSecondImage = (secondImage) => {
     name: 'second_image',
     value: secondImage?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650')?.url || null
   })
+};
+
+const getImage = (image) => {
+  return image?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650')?.url || null
 };
 
 
