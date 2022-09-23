@@ -27,7 +27,7 @@ const addTweakwiseHeader = (obj) =>{
 
 
 
-app.get('/products', async (req, res) => {
+app.get('/', async (req, res) => {
     const categories = await getCategories()
     const products = await getProducts()
     const productsWithCategory = getMatch(categories, products)

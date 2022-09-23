@@ -1,4 +1,3 @@
-const { IdentityStore } = require("aws-sdk");
 
 const getMatch = (categories, products, variants) => {
   products.forEach((product) => {
