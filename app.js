@@ -40,7 +40,7 @@ app.get('/', async (req, res) => {
     res.send(response.body)
 });
 
-app.get('/variants/', async (req, res) => {
+app.get('/variants', async (req, res) => {
     const variants = await getVariants()
     const response = {
     statusCode: 200,
@@ -52,7 +52,7 @@ app.get('/variants/', async (req, res) => {
 });
 
 
-app.get('/stock/', async (req, res) => {
+app.get('/stock', async (req, res) => {
     const stock = await getStock()
     const response = {
     statusCode: 200,
