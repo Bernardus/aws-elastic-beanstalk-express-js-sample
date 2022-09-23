@@ -207,7 +207,7 @@ const getCategories = (categories) => {
   if (!categories) {
     return;
   }
-  return categories.map((category) => ({ "categoryid" : category }));
+  return categories.map((category) => ({ "categoryid" :'31_' + category },{ "categoryid" : '44_' +  category }));
 };
 
 
