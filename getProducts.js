@@ -1,109 +1,124 @@
 const axios = require("axios").default;
 
 let getProductBody = {
-  "page":1,
-  "limit" : 100,
-  "filter":[
+  page: 1,
+  limit: 100,
+  filter: [
     {
-      "type":"equals",
-      "field":"product.parentId",
-      "value":null
+      type: "equals",
+      field: "product.parentId",
+      value: null,
     },
     {
-      "type":"equals",
-      "field":"product.active",
-      "value":true
+      type: "equals",
+      field: "product.active",
+      value: true,
     },
-  
-         { 
-            "type": "multi",   
-            "operator": "or",
-            "queries": [
-                {
-                    "type": "range",
-                    "field": "stock",
-                    "parameters": {
-                    "gte": 1      
-            }
-                },
-                {
-                    "type": "range",
-                    "field": "children.stock",
-                    "parameters": {
-                    "gte": 1      
-            }
-                } 
-            ]
-        }
-  ],
-  "associations":{
-    "children":{
-      "associations":{
-        "options":{}
-      }
-    },
-    "properties":{
-      "associations":{
-        "group":{}
-      }
-    },
-    "media":{
-      "sort":[
+
+    {
+      type: "multi",
+      operator: "or",
+      queries: [
         {
-          "field":"position",
-          "order":"ASC",
-          "naturalSorting":false
-        }
-      ],
-      "total-count-mode":1
-    },
-    "manufacturer":{
-      "sort":[
-        {
-          "field":"position",
-          "order":"ASC",
-          "naturalSorting":false
-        }
-      ],
-      "total-count-mode":1
-    },
-    "options":{
-      "sort":[
-        {
-          "field":"groupId",
-          "order":"ASC",
-          "naturalSorting":false
+          type: "range",
+          field: "stock",
+          parameters: {
+            gte: 1,
+          },
         },
         {
-          "field":"id",
-          "order":"ASC",
-          "naturalSorting":false
-        }
+          type: "range",
+          field: "children.stock",
+          parameters: {
+            gte: 1,
+          },
+        },
       ],
-      "total-count-mode":1
-    }
-  },
-  "includes": {
-      "product": ["ean","id","manufacturer", "children", "options", "name", "sortedProperties", "property_group", "seoUrls", "translated.name", "streamIds", "calculatedPrice", "stock", "cover", "releaseDate","media"],
-      "calculated_price": ["unitPrice", "listPrice"],
-      "cart_list_price": ["price"],
-      "product_media" : ["media"],
-      "media": ["url", "thumbnails"],
-      "media_thumbnail": ["width", "height", "url"],
-      "seo_url": ["seoPathInfo"],
-      "property_group": ["property_group_option", "name", "options.name"],
-      "product_manufacturer": ["name"],
-      "property_group_option": ["name"]
     },
-  "total-count-mode":1
-} ;
-
-
+  ],
+  associations: {
+    children: {
+      associations: {
+        options: {},
+      },
+    },
+    properties: {
+      associations: {
+        group: {},
+      },
+    },
+    media: {
+      sort: [
+        {
+          field: "position",
+          order: "ASC",
+          naturalSorting: false,
+        },
+      ],
+      "total-count-mode": 1,
+    },
+    manufacturer: {
+      sort: [
+        {
+          field: "position",
+          order: "ASC",
+          naturalSorting: false,
+        },
+      ],
+      "total-count-mode": 1,
+    },
+    options: {
+      sort: [
+        {
+          field: "groupId",
+          order: "ASC",
+          naturalSorting: false,
+        },
+        {
+          field: "id",
+          order: "ASC",
+          naturalSorting: false,
+        },
+      ],
+      "total-count-mode": 1,
+    },
+  },
+  includes: {
+    product: [
+      "ean",
+      "id",
+      "manufacturer",
+      "children",
+      "options",
+      "name",
+      "sortedProperties",
+      "property_group",
+      "seoUrls",
+      "translated.name",
+      "streamIds",
+      "calculatedPrice",
+      "stock",
+      "cover",
+      "releaseDate",
+      "media",
+    ],
+    calculated_price: ["unitPrice", "listPrice"],
+    cart_list_price: ["price"],
+    product_media: ["media"],
+    media: ["url", "thumbnails"],
+    media_thumbnail: ["width", "height", "url"],
+    seo_url: ["seoPathInfo"],
+    property_group: ["property_group_option", "name", "options.name"],
+    product_manufacturer: ["name"],
+    property_group_option: ["name"],
+  },
+  "total-count-mode": 1,
+};
 
 const transformProducts = (data) => {
   let productArr = [];
 
- for (const product of data) {
+  for (const product of data) {
     productArr.push({
       name: product.translated.name,
       id: product.id,
@@ -111,17 +126,17 @@ const transformProducts = (data) => {
       brand: product.manufacturer.name,
       streamIds: product.streamIds,
       categories: getCategories(product.categoryIds),
-      price: product.calculatedPrice?.unitPrice || 0 ,
+      price: product.calculatedPrice?.unitPrice || 0,
       url: product.seoUrls?.[0].seoPathInfo,
       image: getImage(product.cover),
-      stock : 0,
+      stock: 0,
       attributes: {
         attribute: [
           ...getProperties(product.sortedProperties),
           ...getCustomFields(product.customFields),
           getSecondImage(product.media[1]),
           getOldPrice(product.calculatedPrice?.listPrice?.price || null),
-          getReleaseDate(product.releaseDate), 
+          getReleaseDate(product.releaseDate),
         ],
       },
     });
@@ -131,83 +146,80 @@ const transformProducts = (data) => {
 
 function filterObject(obj, key) {
   for (var i in obj) {
-      if (!obj.hasOwnProperty(i)) continue;
-      if (typeof obj[i] == 'object') {
-          filterObject(obj[i], key);
-      } else if (i == key) {
-          delete obj[key];
-      }
+    if (!obj.hasOwnProperty(i)) continue;
+    if (typeof obj[i] == "object") {
+      filterObject(obj[i], key);
+    } else if (i == key) {
+      delete obj[key];
+    }
   }
   return obj;
 }
 
-
 const getSecondImage = (secondImage) => {
-    return ({
-    name: 'second_image',
-    value: secondImage?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650')?.url || null
-  })
+  return {
+    name: "second_image",
+    value:
+      secondImage?.media?.thumbnails?.find((thumbnail) => thumbnail.width == "650")?.url || null,
+  };
 };
 
 const getImage = (image) => {
-  return image?.media?.thumbnails?.find(thumbnail => thumbnail.width == '650')?.url || null
+  return image?.media?.thumbnails?.find((thumbnail) => thumbnail.width == "650")?.url || null;
 };
-
 
 const getProperties = (properties) => {
   let propertiesArr = [];
   properties.forEach((property) => {
-    if( property.name !== 'Kleur' && property.name !== 'Categorie'){
-      return
+    if (property.name !== "Kleur" && property.name !== "Categorie") {
+      return;
     }
-   
+
     propertiesArr.push({
-    name: property.name,
-    value: property.options[0].name,
-  })});
+      name: property.name,
+      value: property.options[0].name,
+    });
+  });
   return propertiesArr;
 };
 
 const getReleaseDate = (releaseDate) => {
-  return ({
-    name: 'releaseDate',
-    value: releaseDate
-  })
+  return {
+    name: "releaseDate",
+    value: releaseDate,
+  };
 };
 
 const getOldPrice = (oldPrice) => {
-  console.log(oldPrice)
-  if(!oldPrice){
+  console.log(oldPrice);
+  if (!oldPrice) {
     return {};
   }
-  return ({
-    name: 'old_price',
-    value: oldPrice
-  })
+  return {
+    name: "old_price",
+    value: oldPrice,
+  };
 };
 
 const getCustomFields = (custom_fields) => {
-  if(!custom_fields){
+  if (!custom_fields) {
     return [];
   }
   let customFieldsArr = [];
   Object.keys(custom_fields).forEach((key) => {
-    if(!key){
+    if (!key) {
       return;
     }
-   customFieldsArr.push({ name: key, value: custom_fields[key] })
-  }
-  );
+    customFieldsArr.push({ name: key, value: custom_fields[key] });
+  });
   return customFieldsArr;
 };
 
 const getVariants = (variants) => {
   let variantsArr = [];
-  variants.forEach(
-    (variant) => {
-      return  variantsArr.push({ name: `Size`, value: variant.options?.[0].name })
-    }
-  );
+  variants.forEach((variant) => {
+    return variantsArr.push({ name: `Size`, value: variant.options?.[0].name });
+  });
   return variantsArr;
 };
 
@@ -215,13 +227,13 @@ const getCategories = (categories) => {
   if (!categories) {
     return;
   }
-  return categories.map((category) => ({ "categoryid" :'31_' + category },{ "categoryid" : '44_' +  category }));
+  return categories.map(
+    (category) => ({ categoryid: "31_" + category }, { categoryid: "44_" + category })
+  );
 };
-
-
-let items = [];
-async function getProducts() {
-  // As this is a recursive function, we need to be able to pass it the prevous data. Here we either used the passed in data, or we create a new objet to hold our data.
+const getProducts = async () => {
+  let items = [];
+  let pages = [];
   await axios({
     method: "POST", //you can set what request you want to be
     url: "https://www.freshcotton.com/store-api/product",
@@ -230,27 +242,34 @@ async function getProducts() {
       "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
       "sw-include-seo-urls": 1,
     },
-  }).then(response => {
-      // We merge the returned data with the existing data
-      if(items.length === 0){
-        items = filterObject(response.data.elements, "apiAlias")
-      } else {
-        items = [...items , ...filterObject(response.data.elements, "apiAlias")];
-      }
-      getProductBody.page++
-      console.log(getProductBody.page)
-      // We check if there is more paginated data to be obtained
-      if (items.length < response.data.total) {
-          // If nextPageUrl is not null, we have more data to grab
-          return getProducts();
-      }
-  }).catch(function (error) {
-    console.log(error);
+  }).then((response) => {
+    const pagination = response.data.total / 100;
+    for (let i = 0; i < pagination; i++) {
+      pages.push(
+        axios({
+          url: "https://www.freshcotton.com/store-api/product",
+          data: { ...getProductBody,
+          page : i + 1
+          },
+          method : "POST",
+          headers: {
+            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+            "sw-include-seo-urls": 1,
+          },
+        })
+      );
+    }
   });
+  const allProducts = await Promise.all(pages)
+  allProducts.forEach(response => {
+    if(items.length === 0){
+      items = filterObject(response.data.elements, "apiAlias")
+    } else {
+      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
+    }   })
+  
   return transformProducts(items);
-
-}
-
+};
 
 
 module.exports = getProducts;

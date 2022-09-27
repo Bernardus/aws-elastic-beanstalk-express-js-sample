@@ -12,6 +12,7 @@
   },
   "license": "MIT-0",
   "dependencies": {
+    "@supercharge/promise-pool": "^2.3.2",
     "axios": "^0.27.2",
     "dotenv": "^16.0.2",
     "express": "^4.17.1",

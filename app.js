@@ -63,8 +63,28 @@ app.get('/stock', async (req, res) => {
     res.send(response.body)
 });
 
-app.get('/test', async (req, res) => {
-  res.send('jel')
+app.get('/categories', async (req, res) => {
+  const categories = await getCategories()
+  const response = {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/xml' },
+    body:  xml.buildObject(addTweakwiseHeader({ 'categories' : {'category': categories} }))
+  }
+  res.header(response.headers)
+  res.send(response.body)
+});
+
+app.get('/products', async (req, res) => {
+  const categories = await getCategories()
+  const products = await getProducts()
+  const productsWithCategory = getMatch(categories, products)
+  const response = {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/xml' },
+    body:  xml.buildObject(addTweakwiseHeader({ 'items' : {'item' : productsWithCategory } }))
+  }
+  res.header(response.headers)
+  res.send(response.body)
 });
 
 
