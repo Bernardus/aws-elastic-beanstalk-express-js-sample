@@ -84,9 +84,9 @@ function filterObject(obj, key) {
   return obj;
 }
 
-let items = [];
-async function getStock(data) {
-  // As this is a recursive function, we need to be able to pass it the prevous data. Here we either used the passed in data, or we create a new objet to hold our data.
+const getStock = async () => {
+  let items = [];
+  let pages = [];
   await axios({
     method: "POST", //you can set what request you want to be
     url: "https://www.freshcotton.com/store-api/product",
@@ -95,25 +95,34 @@ async function getStock(data) {
       "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
       "sw-include-seo-urls": 1,
     },
-  }).then(response => {
-      // We merge the returned data with the existing data
-      if(items.length === 0){
-        items = filterObject(response.data.elements, "apiAlias")
-      } else {
-        items = [...items , ...filterObject(response.data.elements, "apiAlias")];
-      }
-      getStockBody.page++
-      // We check if there is more paginated data to be obtained
-      if (items.length < response.data.total) {
-          // If nextPageUrl is not null, we have more data to grab
-          return getStock();
-      }
-  }).catch(function (error) {
-    console.log(error);
+  }).then((response) => {
+    const pagination = response.data.total / 100;
+    for (let i = 0; i < pagination; i++) {
+      pages.push(
+        axios({
+          url: "https://www.freshcotton.com/store-api/product",
+          data: { ...getStockBody,
+          page : i + 1
+          },
+          method : "POST",
+          headers: {
+            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+            "sw-include-seo-urls": 1,
+          },
+        })
+      );
+    }
   });
+  const allStock = await Promise.all(pages)
+  allStock.forEach(response => {
+    if(items.length === 0){
+      items = filterObject(response.data.elements, "apiAlias")
+    } else {
+      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
+    }   })
+  
   return transformStock(items);
-
-}
+};
 
 
 
