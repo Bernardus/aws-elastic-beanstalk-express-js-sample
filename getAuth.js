@@ -6,7 +6,6 @@ const getAuthBody = {
     "client_secret": "WUpEYVRybzIyWDRoY1BkQU5yYktPcG43N2RRaVdvQ1hWT1JqSDE"
 }
 
-
 const getAuth = async () => {
     const fetch = await axios({
         method: 'POST', //you can set what request you want to be
