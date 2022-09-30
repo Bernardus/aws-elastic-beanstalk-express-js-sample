@@ -101,6 +101,7 @@ let getProductBody = {
       "cover",
       "releaseDate",
       "media",
+      "customFields"
     ],
     calculated_price: ["unitPrice", "listPrice"],
     cart_list_price: ["price"],
