@@ -112,7 +112,7 @@ const getStock = async () => {
         })
       );
     }
-  });
+  }).catch(e => console.error(e))
   const allStock = await Promise.all(pages)
   allStock.forEach(response => {
     if(items.length === 0){

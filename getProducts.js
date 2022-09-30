@@ -191,7 +191,6 @@ const getReleaseDate = (releaseDate) => {
 };
 
 const getOldPrice = (oldPrice) => {
-  console.log(oldPrice);
   if (!oldPrice) {
     return {};
   }
@@ -259,7 +258,7 @@ const getProducts = async () => {
         })
       );
     }
-  });
+  }).catch(e => console.error(e))
   const allProducts = await Promise.all(pages)
   allProducts.forEach(response => {
     if(items.length === 0){

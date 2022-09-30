@@ -134,7 +134,7 @@ const getVariants = async () => {
         })
       );
     }
-  });
+  }).catch(e => console.error(e))
   const allVariants = await Promise.all(pages)
   allVariants.forEach(response => {
     if(items.length === 0){
