@@ -70,7 +70,7 @@ const mutateVariants = (product) => {
       if(variant.stock === 0){
         return
       }
-      if(!variant.options?.[0].name){
+      if(!variant.options?.[0]?.name){
         return
       }
       return variantsArr.push({ value: variant.options?.[0].name })

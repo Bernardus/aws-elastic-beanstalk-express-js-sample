@@ -24,8 +24,8 @@ const transformCategories = async (data) =>{
     transformedCategories.push({
       "name" : category.translated?.name || category.name,
       "streamId" : category.productStreamId,  
-      "categoryid" : '31_' + category.id,
-      "parents" : { 'categoryid' :  category.path ? '31_' + category.path.slice(1, -1).split('|').at(-1) : 31},
+      "categoryid" : 'nl-NL_' + category.id,
+      "parents" : { 'categoryid' :  category.path ? 'nl-NL_' + category.path.slice(1, -1).split('|').at(-1) : 31},
       "rank" : category.path ? category.path.slice(1, -1).split('|').length : 1,
     })
   })
