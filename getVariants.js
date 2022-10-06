@@ -73,6 +73,9 @@ const mutateVariants = (product) => {
       if(!variant.options?.[0]?.name){
         return
       }
+      if(!variant.options?.[0]?.name < 1){
+        return
+      }
       return variantsArr.push({ value: variant.options?.[0].name })
     }
   );
