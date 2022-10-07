@@ -17,15 +17,15 @@ const transformCategories = async (data) =>{
     transformedCategories.push({
       "name" : category.translated?.name || category.name,
       "streamId" : category.productStreamId,  
-      "categoryid" : '44_' + category.id,
-      "parents" : { 'categoryid' :  category.path ? '44_' + category.path.slice(1, -1).split('|').at(-1) : 44},
+      "categoryid" : 'en_' + category.id,
+      "parents" : { 'categoryid' :  category.path ? 'en_' + category.path.slice(1, -1).split('|').at(-1) : 44},
       "rank" : category.path ? category.path.slice(1, -1).split('|').length : 1,
     })
     transformedCategories.push({
       "name" : category.translated?.name || category.name,
       "streamId" : category.productStreamId,  
-      "categoryid" : 'nl-NL_' + category.id,
-      "parents" : { 'categoryid' :  category.path ? 'nl-NL_' + category.path.slice(1, -1).split('|').at(-1) : 31},
+      "categoryid" : 'nl-' + category.id,
+      "parents" : { 'categoryid' :  category.path ? 'nl-' + category.path.slice(1, -1).split('|').at(-1) : 31},
       "rank" : category.path ? category.path.slice(1, -1).split('|').length : 1,
     })
   })

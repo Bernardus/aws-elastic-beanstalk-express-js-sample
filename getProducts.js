@@ -228,7 +228,7 @@ const getCategories = (categories) => {
     return;
   }
   return categories.map(
-    (category) => ({ categoryid: "nl-NL_" + category }, { categoryid: "44_" + category })
+    (category) => ({ categoryid: "nl_" + category }, { categoryid: "en_" + category })
   );
 };
 const getProducts = async () => {
