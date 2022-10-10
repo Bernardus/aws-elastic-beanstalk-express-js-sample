@@ -73,7 +73,7 @@ const mutateVariants = (product) => {
       if(!variant.options?.[0]?.name){
         return
       }
-      return variantsArr.push({ value: variant.options?.[0].name })
+      return variantsArr.push({ value: variant.options?.[0]?.name || 'empty' })
     }
   );
   return unique(variantsArr);

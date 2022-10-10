@@ -88,6 +88,17 @@ app.get('/products', async (req, res) => {
 });
 
 
+app.get('/test', async (req, res) => {
+  const products = await getProducts()
+  const response = {
+    statusCode: 200,
+    headers: { 'Content-Type': 'application/json' },
+    body:  products
+  }
+  res.header(response.headers)
+  res.send(response.body)
+});
+
 
 app.listen(port);
 console.log(`App running on http://localhost:${port}`);

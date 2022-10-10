@@ -109,6 +109,7 @@ const getProducts = async () => {
         "sw-include-seo-urls": 1,
         },
     }).then(response => {
+      console.log(response.data.total)
         const pagination = response.data.total / 100;
         for (let i = 0; i < pagination; i++){
          pages.push(fetch('https://www.freshcotton.com/store-api/product', { getProductBody , ...getProductBody.page = i ,  headers: {

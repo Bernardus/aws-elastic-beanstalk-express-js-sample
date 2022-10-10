@@ -2,7 +2,6 @@ const axios = require("axios").default;
 
 let getProductBody = {
   page: 1,
-  limit: 100,
   filter: [
     {
       type: "equals",
@@ -101,7 +100,6 @@ let getProductBody = {
       "cover",
       "releaseDate",
       "media",
-      "customFields"
     ],
     calculated_price: ["unitPrice", "listPrice"],
     cart_list_price: ["price"],
@@ -192,6 +190,7 @@ const getReleaseDate = (releaseDate) => {
 };
 
 const getOldPrice = (oldPrice) => {
+  console.log(oldPrice);
   if (!oldPrice) {
     return {};
   }
@@ -228,7 +227,7 @@ const getCategories = (categories) => {
     return;
   }
   return categories.map(
-    (category) => ({ categoryid: "nl_" + category }, { categoryid: "en_" + category })
+    (category) => ({ categoryid: "31_" + category }, { categoryid: "44_" + category })
   );
 };
 const getProducts = async () => {
@@ -245,6 +244,7 @@ const getProducts = async () => {
   }).then((response) => {
     const pagination = response.data.total / 100;
     for (let i = 0; i < pagination; i++) {
+      console.log(i + 1)
       pages.push(
         axios({
           url: "https://www.freshcotton.com/store-api/product",
@@ -259,8 +259,9 @@ const getProducts = async () => {
         })
       );
     }
-  }).catch(e => console.error(e))
-  const allProducts = await Promise.all(pages)
+  });
+  const allProducts = await Promise.all(pages).catch(e => console.log(e));
+
   allProducts.forEach(response => {
     if(items.length === 0){
       items = filterObject(response.data.elements, "apiAlias")
