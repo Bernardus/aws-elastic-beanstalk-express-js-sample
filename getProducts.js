@@ -2,6 +2,7 @@ const axios = require("axios").default;
 
 let getProductBody = {
   page: 1,
+  limit: 100,
   filter: [
     {
       type: "equals",
