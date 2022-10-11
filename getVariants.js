@@ -116,6 +116,7 @@ const getVariants = async () => {
     headers: {
       "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
       "sw-include-seo-urls": 1,
+      "sw-language-id": "2fbb5fe2e29a4d70aa5854ce7ce3e20b"
     },
   }).then((response) => {
     const pagination = response.data.total / 100;
