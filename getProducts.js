@@ -140,6 +140,7 @@ const transformProducts = (data) => {
         ],
       },
     });
+    
   }
   return productArr;
 };
@@ -259,11 +260,17 @@ const getProducts = async () => {
           },
         })
       );
+      pages.push(new Promise(function(resolve, reject) {
+        setTimeout( resolve({ timeout : true}), 800)
+     }));
     }
   });
   const allProducts = await Promise.all(pages).catch(e => console.log(e));
 
   allProducts.forEach(response => {
+    if(response.timeout){
+      return;
+    }
     if(items.length === 0){
       items = filterObject(response.data.elements, "apiAlias")
     } else {

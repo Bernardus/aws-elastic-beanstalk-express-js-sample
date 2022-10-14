@@ -135,10 +135,16 @@ const getVariants = async () => {
           },
         })
       );
+      pages.push(new Promise(function(resolve, reject) {
+        setTimeout( resolve({ timeout : true}), 800)
+     }));
     }
   }).catch(e => console.error(e))
   const allVariants = await Promise.all(pages)
   allVariants.forEach(response => {
+    if(response.timeout){
+      return;
+    }
     if(items.length === 0){
       items = filterObject(response.data.elements, "apiAlias")
     } else {
