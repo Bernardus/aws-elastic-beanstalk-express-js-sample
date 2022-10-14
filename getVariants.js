@@ -136,7 +136,7 @@ const getVariants = async () => {
         })
       );
       pages.push(new Promise(function(resolve, reject) {
-        setTimeout( resolve({ timeout : true}), 800)
+        setTimeout( resolve({ timeout : true}), 1000)
      }));
     }
   }).catch(e => console.error(e))

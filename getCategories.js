@@ -70,7 +70,7 @@ const transformCategories = async (data) =>{
           getCategoriesBody.page++
           // We check if there is more paginated data to be obtaine
 
-      });
+      }).catch(error => console.log(error));
 
       return transformCategories(data);
     }
