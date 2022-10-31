@@ -45,7 +45,7 @@ app.get('/variants', async (req, res) => {
     const response = {
     statusCode: 200,
     headers: { 'Content-Type': 'application/xml' },
-    body:  xml.buildObject(({'items' : { 'item' : variants }}))
+    body:  xml.buildObject(({'items' : { 'item' : variants}}))
   }
     res.header(response.headers)
     res.send(response.body)

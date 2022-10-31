@@ -21,13 +21,6 @@ let getVariantsBody = {
               "queries": [
                   {
                       "type": "range",
-                      "field": "stock",
-                      "parameters": {
-                      "gte": 1      
-              }
-                  },
-                  {
-                      "type": "range",
                       "field": "children.stock",
                       "parameters": {
                       "gte": 1      
@@ -44,8 +37,8 @@ let getVariantsBody = {
       }
     },
     "includes": {
-        "product": ["ean","children" , "options", "id"],
-        "property_group_option" : ["name"]
+        "product": ["ean","children" , "options", "id", "stock"],
+        "property_group_option" : ["name", "translated"]
       },
     "total-count-mode":1
   } ;
@@ -54,6 +47,7 @@ let getVariantsBody = {
     let variantsArr = [];
   
    for (const product of data) {
+    
     variantsArr.push({
         "id" : product.id,
         "values": [mutateVariants(product)],
@@ -70,10 +64,10 @@ const mutateVariants = (product) => {
       if(variant.stock === 0){
         return
       }
-      if(!variant.options?.[0]?.name){
+      if(variant.options?.[0].translated.name === null){
         return
       }
-      return variantsArr.push({ value: variant.options?.[0]?.name || 'empty' })
+      return variantsArr.push({ value: variant.options?.[0].translated.name })
     }
   );
   return unique(variantsArr);
@@ -106,9 +100,9 @@ const unique = (arr) => {
 });
 }
 
-const getVariants = async () => {
-  let items = [];
-  let pages = [];
+let items = [];
+async function getVariants(data) {
+  // As this is a recursive function, we need to be able to pass it the prevous data. Here we either used the passed in data, or we create a new objet to hold our data.
   await axios({
     method: "POST", //you can set what request you want to be
     url: "https://www.freshcotton.com/store-api/product",
@@ -116,43 +110,26 @@ const getVariants = async () => {
     headers: {
       "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
       "sw-include-seo-urls": 1,
-      "sw-language-id": "2fbb5fe2e29a4d70aa5854ce7ce3e20b"
     },
-  }).then((response) => {
-    const pagination = response.data.total / 100;
-    for (let i = 0; i < pagination; i++) {
-      pages.push(
-        axios({
-          url: "https://www.freshcotton.com/store-api/product",
-          data: { ...getVariantsBody,
-          page : i + 1
-          },
-          method : "POST",
-          headers: {
-            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
-            "sw-include-seo-urls": 1,
-            "sw-language-id": "2fbb5fe2e29a4d70aa5854ce7ce3e20b"
-          },
-        })
-      );
-      pages.push(new Promise(function(resolve, reject) {
-        setTimeout( resolve({ timeout : true}), 1000)
-     }));
-    }
-  }).catch(e => console.error(e))
-  const allVariants = await Promise.all(pages)
-  allVariants.forEach(response => {
-    if(response.timeout){
-      return;
-    }
-    if(items.length === 0){
-      items = filterObject(response.data.elements, "apiAlias")
-    } else {
-      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
-    }   })
-  
+  }).then(response => {
+      // We merge the returned data with the existing data
+      if(items.length === 0){
+        items = filterObject(response.data.elements, "apiAlias")
+      } else {
+        items = [...items , ...filterObject(response.data.elements, "apiAlias")];
+      }
+      getVariantsBody.page++
+      // We check if there is more paginated data to be obtained
+      if (items.length < response.data.total) {
+          // If nextPageUrl is not null, we have more data to grab
+          return getVariants();
+      }
+  }).catch(function (error) {
+    console.log(error);
+  });
   return transformVariants(items);
-};
+
+}
 
 
 

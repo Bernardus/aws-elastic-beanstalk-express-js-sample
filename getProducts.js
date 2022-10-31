@@ -1,94 +1,87 @@
 const axios = require("axios").default;
 
 let getProductBody = {
-  page: 1,
-  limit: 100,
-  filter: [
+  "page":1,
+  "limit":100,
+  "filter":[
     {
-      type: "equals",
-      field: "product.parentId",
-      value: null,
+      "type":"equals",
+      "field":"product.parentId",
+      "value":null
     },
     {
-      type: "equals",
-      field: "product.active",
-      value: true,
+      "type":"equals",
+      "field":"product.active",
+      "value":true
     },
-
     {
-      type: "multi",
-      operator: "or",
-      queries: [
+      "type":"multi",
+      "operator":"or",
+      "queries":[
         {
-          type: "range",
-          field: "stock",
-          parameters: {
-            gte: 1,
-          },
+          "type":"range",
+          "field":"stock",
+          "parameters":{
+            "gte":1
+          }
         },
         {
-          type: "range",
-          field: "children.stock",
-          parameters: {
-            gte: 1,
-          },
-        },
-      ],
-    },
+          "type":"range",
+          "field":"children.stock",
+          "parameters":{
+            "gte":1
+          }
+        }
+      ]
+    }
   ],
-  associations: {
-    children: {
-      associations: {
-        options: {},
-      },
+  "associations":{
+    "properties":{
+      "associations":{
+        "group":{}
+      }
     },
-    properties: {
-      associations: {
-        group: {},
-      },
-    },
-    media: {
-      sort: [
+    "media":{
+      "sort":[
         {
-          field: "position",
-          order: "ASC",
-          naturalSorting: false,
-        },
+          "field":"position",
+          "order":"ASC",
+          "naturalSorting":false
+        }
       ],
-      "total-count-mode": 1,
+      "total-count-mode":1
     },
-    manufacturer: {
-      sort: [
+    "manufacturer":{
+      "sort":[
         {
-          field: "position",
-          order: "ASC",
-          naturalSorting: false,
-        },
+          "field":"position",
+          "order":"ASC",
+          "naturalSorting":false
+        }
       ],
-      "total-count-mode": 1,
+      "total-count-mode":1
     },
-    options: {
-      sort: [
+    "options":{
+      "sort":[
         {
-          field: "groupId",
-          order: "ASC",
-          naturalSorting: false,
+          "field":"groupId",
+          "order":"ASC",
+          "naturalSorting":false
         },
         {
-          field: "id",
-          order: "ASC",
-          naturalSorting: false,
-        },
+          "field":"id",
+          "order":"ASC",
+          "naturalSorting":false
+        }
       ],
-      "total-count-mode": 1,
-    },
+      "total-count-mode":1
+    }
   },
-  includes: {
-    product: [
+  "includes":{
+    "product":[
       "ean",
       "id",
       "manufacturer",
-      "children",
       "options",
       "name",
       "sortedProperties",
@@ -97,22 +90,45 @@ let getProductBody = {
       "translated.name",
       "streamIds",
       "calculatedPrice",
-      "stock",
-      "cover",
       "releaseDate",
       "media",
+      "customFields"
     ],
-    calculated_price: ["unitPrice", "listPrice"],
-    cart_list_price: ["price"],
-    product_media: ["media"],
-    media: ["url", "thumbnails"],
-    media_thumbnail: ["width", "height", "url"],
-    seo_url: ["seoPathInfo"],
-    property_group: ["property_group_option", "name", "options.name"],
-    product_manufacturer: ["name"],
-    property_group_option: ["name"],
+    "calculated_price":[
+      "unitPrice",
+      "listPrice"
+    ],
+    "cart_list_price":[
+      "price"
+    ],
+    "product_media":[
+      "media"
+    ],
+    "media":[
+      "url",
+      "thumbnails"
+    ],
+    "media_thumbnail":[
+      "width",
+      "height",
+      "url"
+    ],
+    "seo_url":[
+      "seoPathInfo"
+    ],
+    "property_group":[
+      "property_group_option",
+      "name",
+      "options.name"
+    ],
+    "product_manufacturer":[
+      "name"
+    ],
+    "property_group_option":[
+      "name"
+    ]
   },
-  "total-count-mode": 1,
+  "total-count-mode":1
 };
 
 const transformProducts = (data) => {
@@ -128,7 +144,7 @@ const transformProducts = (data) => {
       categories: getCategories(product.categoryIds),
       price: product.calculatedPrice?.unitPrice || 0,
       url: product.seoUrls?.[0].seoPathInfo,
-      image: getImage(product.cover),
+      image: getImage(product.media[0]),
       stock: 0,
       attributes: {
         attribute: [
@@ -209,6 +225,9 @@ const getCustomFields = (custom_fields) => {
   let customFieldsArr = [];
   Object.keys(custom_fields).forEach((key) => {
     if (!key) {
+      return;
+    }
+    if(key !== 'custom_pdp_releasetimer'){
       return;
     }
     customFieldsArr.push({ name: key, value: custom_fields[key] });
