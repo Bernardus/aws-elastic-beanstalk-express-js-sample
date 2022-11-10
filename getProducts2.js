@@ -2,7 +2,6 @@ const axios = require("axios").default;
 const getAuth = require("./getAuth");
 
 let getProductBody = {
-  "page":1,
   "limit":100,
   "filter":[
     {
@@ -34,18 +33,7 @@ let getProductBody = {
           }
         }
       ]
-    },
-    {
-  "type": "not",
-  "queries": [
-    {
-      "type": "equals",
-      "field": "product.coverId",
-      "value": null
     }
-  ]
-}
-
   ],
   "associations":{
     "properties":{
@@ -105,8 +93,7 @@ let getProductBody = {
       "releaseDate",
       "media",
       "customFields",
-      "cover",
-      "coverId"
+      "translated"
     ],
     "calculated_price":[
       "unitPrice",
@@ -162,7 +149,7 @@ const transformProducts = (data) => {
       stock: 0,
       attributes: {
         attribute: [
-          ...getProperties(product.sortedProperties),
+          // ...getProperties(product.sortedProperties),
           ...getCustomFields(product.customFields),
           getSecondImage(product.media[1]),
           getOldPrice(product.calculatedPrice?.listPrice?.price || null),
@@ -272,49 +259,37 @@ const getProducts = async (token = false) => {
 
   let items = [];
   let pages = [];
+
   await axios({
     method: "POST", //you can set what request you want to be
-    url: "https://www.freshcotton.com/store-api/product",
+    url: "https://www.freshcotton.com/api/search/product",
     data: getProductBody,
     headers: {
-      "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
-      "sw-include-seo-urls": 1,
+      "Authorization": 'Bearer ' + credentials
     },
   }).then((response) => {
     const pagination = response.data.total / 100;
     for (let i = 0; i < pagination; i++) {
       pages.push(
         axios({
-          url: "https://www.freshcotton.com/store-api/product",
+          url: "https://www.freshcotton.com/api/search/product",
           data: { ...getProductBody,
           page : i + 1
           },
           method : "POST",
           headers: {
-            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
-            "sw-include-seo-urls": 1,
-          }
+            "Authorization": 'Bearer ' + credentials
+          },
         })
       );
-      pages.push(new Promise(function(resolve, reject) {
-        setTimeout( resolve({ timeout : true}), 800)
-     }));
     }
   });
   const allProducts = await Promise.all(pages).catch(e => console.log(e));
 
   allProducts.forEach(response => {
-    if(!response.data){
-      return;
-    }
-    if(response.timeout){
-      return;
-    }
-    if(items.length === 0){
-      items = filterObject(response.data.elements, "apiAlias")
-    } else {
-      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
-    }   
+  
+    items = [...items , ...response.data.data];
+
   })
   
   return transformProducts(items);

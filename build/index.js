@@ -110,6 +110,164 @@ module.exports = getCategories;
 
 /***/ }),
 
+/***/ 368:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const axios = (__nccwpck_require__(992)["default"]);
+
+let getOptionsBody = {
+  "page":1,
+  "limit" : 100,
+  "filter":[
+    {
+      "type":"equals",
+      "field":"product.parentId",
+      "value":null
+    },
+    {
+      "type":"equals",
+      "field":"product.active",
+      "value":true
+    },
+  
+         { 
+            "type": "multi",   
+            "operator": "or",
+            "queries": [
+                {
+                    "type": "range",
+                    "field": "stock",
+                    "parameters": {
+                    "gte": 1      
+            }
+                },
+                {
+                    "type": "range",
+                    "field": "children.stock",
+                    "parameters": {
+                    "gte": 1      
+            }
+                } 
+            ]
+        }
+  ],
+  "associations":{
+    "properties":{
+      "associations":{
+        "group":{}
+      }
+    }
+  },
+  "includes": {
+      "product": ["children" , "id", "properties", "translated"],
+      "property_group_option" : ["name", "translated", "group"],
+      "property_group":["name"]
+    },
+  "total-count-mode":1
+} ;
+
+
+  const transformOptions = (data) => {
+    let stockArr = [];
+  
+   for (const product of data) {
+    stockArr.push({
+        "id" : product.id,
+        "values" : {'value' : mutateOptions(product)},
+});
+   }
+   return stockArr
+
+};
+
+const mutateOptions = (product) => {
+  let optionsArr = [];
+  product.properties.forEach(
+    (property) => {
+
+      if(property.stock === 0){
+        return
+      }
+      if(property.group.name !== "Kleur"){
+        return
+      }
+      if(property.name === null){
+        return
+      }
+      if(property.name === null){
+        return
+      }
+      return optionsArr.push(property.translated.name)
+    }
+  );
+  return unique(optionsArr);
+
+};
+
+
+
+
+function filterObject(obj, key) {
+  for (var i in obj) {
+      if (!obj.hasOwnProperty(i)) continue;
+      if (typeof obj[i] == 'object') {
+          filterObject(obj[i], key);
+      } else if (i == key) {
+          delete obj[key];
+      }
+  }
+  return obj;
+}
+
+const getOptions = async () => {
+  let items = [];
+  let pages = [];
+  await axios({
+    method: "POST", //you can set what request you want to be
+    url: "https://www.freshcotton.com/store-api/product",
+    data: getOptionsBody,
+    headers: {
+      "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+      "sw-include-seo-urls": 1,
+    },
+  }).then((response) => {
+    const pagination = response.data.total / 100;
+    for (let i = 0; i < pagination; i++) {
+      pages.push(
+        axios({
+          url: "https://www.freshcotton.com/store-api/product",
+          data: { ...getOptionsBody,
+          page : i + 1
+          },
+          method : "POST",
+          headers: {
+            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+            "sw-include-seo-urls": 1,
+          },
+        })
+      );
+    }
+  }).catch(e => console.error(e))
+  const allStock = await Promise.all(pages)
+  allStock.forEach(response => {
+    if(response.timeout){
+      return;
+    }
+    if(items.length === 0){
+      items = filterObject(response.data.elements, "apiAlias")
+    } else {
+      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
+    }   })
+  return transformOptions(items);
+};
+
+
+
+module.exports = getOptions;
+
+
+/***/ }),
+
 /***/ 5098:
 /***/ ((module) => {
 
@@ -126,7 +284,9 @@ const getMatch = (categories, products, variants) => {
     product.streamIds.forEach((stream) => {
       categories.forEach((category) => {
         if (stream === category.streamId) {
+          if(category.categoryid.includes('nl_')){
             ids.push(category.categoryid);
+          }
         }
       })
       product.categories = { 'categoryid' : ids };
@@ -164,6 +324,7 @@ module.exports = getMatch;
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const axios = (__nccwpck_require__(992)["default"]);
+const getAuth = __nccwpck_require__(9151);
 
 let getProductBody = {
   "page":1,
@@ -172,7 +333,7 @@ let getProductBody = {
     {
       "type":"equals",
       "field":"product.parentId",
-      "value":null
+      "value": null
     },
     {
       "type":"equals",
@@ -198,7 +359,18 @@ let getProductBody = {
           }
         }
       ]
+    },
+    {
+  "type": "not",
+  "queries": [
+    {
+      "type": "equals",
+      "field": "product.coverId",
+      "value": null
     }
+  ]
+}
+
   ],
   "associations":{
     "properties":{
@@ -257,7 +429,9 @@ let getProductBody = {
       "calculatedPrice",
       "releaseDate",
       "media",
-      "customFields"
+      "customFields",
+      "cover",
+      "coverId"
     ],
     "calculated_price":[
       "unitPrice",
@@ -373,7 +547,6 @@ const getReleaseDate = (releaseDate) => {
 };
 
 const getOldPrice = (oldPrice) => {
-  console.log(oldPrice);
   if (!oldPrice) {
     return {};
   }
@@ -416,7 +589,12 @@ const getCategories = (categories) => {
     (category) => ({ categoryid: "31_" + category }, { categoryid: "44_" + category })
   );
 };
-const getProducts = async () => {
+let items = (/* unused pure expression or super */ null && ([]));
+
+
+const getProducts = async (token = false) => {
+  const credentials = token ? token : await getAuth()
+
   let items = [];
   let pages = [];
   await axios({
@@ -430,7 +608,6 @@ const getProducts = async () => {
   }).then((response) => {
     const pagination = response.data.total / 100;
     for (let i = 0; i < pagination; i++) {
-      console.log(i + 1)
       pages.push(
         axios({
           url: "https://www.freshcotton.com/store-api/product",
@@ -441,7 +618,7 @@ const getProducts = async () => {
           headers: {
             "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
             "sw-include-seo-urls": 1,
-          },
+          }
         })
       );
       pages.push(new Promise(function(resolve, reject) {
@@ -452,6 +629,9 @@ const getProducts = async () => {
   const allProducts = await Promise.all(pages).catch(e => console.log(e));
 
   allProducts.forEach(response => {
+    if(!response.data){
+      return;
+    }
     if(response.timeout){
       return;
     }
@@ -459,7 +639,8 @@ const getProducts = async () => {
       items = filterObject(response.data.elements, "apiAlias")
     } else {
       items = [...items , ...filterObject(response.data.elements, "apiAlias")];
-    }   })
+    }   
+  })
   
   return transformProducts(items);
 };
@@ -750,6 +931,7 @@ async function getVariants(data) {
 
 
 module.exports = getVariants;
+
 
 /***/ }),
 
@@ -13410,6 +13592,7 @@ const getCategories = __nccwpck_require__(4029);
 const getMatch = __nccwpck_require__(5098);
 const getVariants = __nccwpck_require__(1229);
 const getStock = __nccwpck_require__(8641);
+const getOptions = __nccwpck_require__(368);
 
 const xml = new xml2js.Builder({explicitChildren: true, preserveChildrenOrder : true});
 
@@ -13458,6 +13641,17 @@ const addTweakwiseHeader = (obj) =>{
   }
   return response;   
     }
+    
+    if(event.rawPath == '/color/'){
+      const options = await getOptions()
+      const response = {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/xml' },
+      body:  xml.buildObject(({'items' : { 'item' : options }}))
+    }
+    return response;   
+      }
+
   
     return {
         statusCode: 200,

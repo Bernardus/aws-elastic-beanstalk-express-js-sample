@@ -6,6 +6,7 @@ const getCategories = require("./getCategories");
 const getMatch = require("./getMatch");
 const getVariants = require("./getVariants");
 const getStock = require("./getStock");
+const getOptions = require("./getColor");
 
 const xml = new xml2js.Builder({explicitChildren: true, preserveChildrenOrder : true});
 
@@ -54,6 +55,17 @@ const addTweakwiseHeader = (obj) =>{
   }
   return response;   
     }
+    
+    if(event.rawPath == '/color/'){
+      const options = await getOptions()
+      const response = {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/xml' },
+      body:  xml.buildObject(({'items' : { 'item' : options }}))
+    }
+    return response;   
+      }
+
   
     return {
         statusCode: 200,

@@ -11,7 +11,9 @@ const getMatch = (categories, products, variants) => {
     product.streamIds.forEach((stream) => {
       categories.forEach((category) => {
         if (stream === category.streamId) {
+          if(category.categoryid.includes('nl_')){
             ids.push(category.categoryid);
+          }
         }
       })
       product.categories = { 'categoryid' : ids };

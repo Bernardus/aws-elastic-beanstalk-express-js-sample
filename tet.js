@@ -34,18 +34,7 @@ let getProductBody = {
           }
         }
       ]
-    },
-    {
-  "type": "not",
-  "queries": [
-    {
-      "type": "equals",
-      "field": "product.coverId",
-      "value": null
     }
-  ]
-}
-
   ],
   "associations":{
     "properties":{
@@ -104,9 +93,7 @@ let getProductBody = {
       "calculatedPrice",
       "releaseDate",
       "media",
-      "customFields",
-      "cover",
-      "coverId"
+      "customFields"
     ],
     "calculated_price":[
       "unitPrice",
@@ -268,7 +255,6 @@ let items = [];
 
 
 const getProducts = async (token = false) => {
-  const credentials = token ? token : await getAuth()
 
   let items = [];
   let pages = [];
@@ -311,9 +297,9 @@ const getProducts = async (token = false) => {
       return;
     }
     if(items.length === 0){
-      items = filterObject(response.data.elements, "apiAlias")
+      items = filterObject(response.data.data, "apiAlias")
     } else {
-      items = [...items , ...filterObject(response.data.elements, "apiAlias")];
+      items = [...items , ...filterObject(response.data.data, "apiAlias")];
     }   
   })
   
