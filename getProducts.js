@@ -202,7 +202,7 @@ const getImage = (image) => {
 const getProperties = (properties) => {
   let propertiesArr = [];
   properties.forEach((property) => {
-    if (property.name !== "Kleur" && property.name !== "Categorie") {
+    if (property.name !== "Kleur" && property.name !== "Categorie" && property.name !== "Seizoen") {
       return;
     }
 
@@ -214,7 +214,7 @@ const getProperties = (properties) => {
   return propertiesArr;
 };
 
-const getReleaseDate = (releaseDate) => {
+  const getReleaseDate = (releaseDate) => {
   return {
     name: "releaseDate",
     value: releaseDate,
@@ -277,7 +277,7 @@ const getProducts = async (token = false) => {
     url: "https://www.freshcotton.com/store-api/product",
     data: getProductBody,
     headers: {
-      "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+      "sw-access-key": "SWSCVWPZYKFLAG40DKNCCVHKCQ",
       "sw-include-seo-urls": 1,
     },
   }).then((response) => {
@@ -291,7 +291,7 @@ const getProducts = async (token = false) => {
           },
           method : "POST",
           headers: {
-            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+            "sw-access-key": "SWSCVWPZYKFLAG40DKNCCVHKCQ",
             "sw-include-seo-urls": 1,
           }
         })

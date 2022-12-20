@@ -61,6 +61,7 @@ const mutateVariants = (product) => {
   let variantsArr = [];
   product.children.forEach(
     (variant) => {
+      console.log(variant)
       if(variant.stock === 0){
         return
       }
@@ -86,7 +87,6 @@ function filterObject(obj, key) {
   return obj;
 }
 
-let uniqueIds = [];
 const unique = (arr) => {
   uniqueIds = []
  return arr.filter(element => {
@@ -108,7 +108,7 @@ async function getVariants(data) {
     url: "https://www.freshcotton.com/store-api/product",
     data: getVariantsBody,
     headers: {
-      "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+      "sw-access-key": "SWSCVWPZYKFLAG40DKNCCVHKCQ",
       "sw-include-seo-urls": 1,
     },
   }).then(response => {

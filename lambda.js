@@ -24,6 +24,10 @@ const addTweakwiseHeader = (obj) =>{
   }
 
   exports.handler = async (event) => {
+    if(event.requestContext.http.sourceIp !== "195.225.102.102" && !event.requestContext.http.sourceIp.includes("83.219.83")){
+      return;
+  }
+  
     if(event.rawPath == '/'){
     const categories = await getCategories()
     const products = await getProducts()

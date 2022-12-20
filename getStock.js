@@ -92,7 +92,7 @@ const getStock = async () => {
     url: "https://www.freshcotton.com/store-api/product",
     data: getStockBody,
     headers: {
-      "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+      "sw-access-key": "SWSCVWPZYKFLAG40DKNCCVHKCQ",
       "sw-include-seo-urls": 1,
     },
   }).then((response) => {
@@ -106,7 +106,7 @@ const getStock = async () => {
           },
           method : "POST",
           headers: {
-            "sw-access-key": "SWSCVEJAVLRZNXVBNJRDWDU1BA",
+            "sw-access-key": "SWSCVWPZYKFLAG40DKNCCVHKCQ",
             "sw-include-seo-urls": 1,
           },
         })
